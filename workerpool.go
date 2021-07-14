@@ -115,11 +115,7 @@ func (t *WorkerPool) PushItem(a interface{}) {
 }
 
 func (t *WorkerPool) Idle() bool {
-	// if t.nWorkingCount == 0 && len(t.dataCh) == 0 {
-	// 	return true
-	// }
-
-	if t.GetPendingItemCount() == 0 {
+	if t.nWorkingCount == 0 && len(t.dataCh) == 0 && t.GetPendingItemCount() == 0 {
 		return true
 	}
 
@@ -131,6 +127,14 @@ func (t *WorkerPool) GetPendingItemCount() int {
 	var nCount int = 0
 	t.locker.Lock()
 	nCount = t.pendingItems
+	t.locker.Unlock()
+	return nCount
+}
+
+func (t *WorkerPool) GetQSize() int {
+	var nCount int = 0
+	t.locker.Lock()
+	nCount = len(t.dataCh)
 	t.locker.Unlock()
 	return nCount
 }
